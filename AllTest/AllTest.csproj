@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{18B713BE-55AF-4B5C-B048-C07E487E4F82}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AllTest</RootNamespace>
+    <AssemblyName>AllTest</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sample.cs" />
+    <Compile Include="Statistics.cs" />
+    <Compile Include="Test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaseClasses\BaseClasses.csproj">
+      <Project>{E29FF936-8E3C-47D3-A037-FC59AAD7BBD5}</Project>
+      <Name>BaseClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MarchingCubes\MarchingCubes.csproj">
+      <Project>{D829F706-306F-4F1C-8CFA-BE8B5A23903F}</Project>
+      <Name>MarchingCubes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OctreeBaseSimplifiedMarchingCubes\OctreeBaseSimplifiedMarchingCubes.csproj">
+      <Project>{9A9C5C4D-85EB-487C-8280-99D4F33BC8B6}</Project>
+      <Name>OctreeBaseSimplifiedMarchingCubes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimplifiedMarchingCubes\SimplifiedMarchingCubes.csproj">
+      <Project>{B6E57FD3-AFC7-45BE-A741-FCE66489B5B2}</Project>
+      <Name>SimplifiedMarchingCubes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
