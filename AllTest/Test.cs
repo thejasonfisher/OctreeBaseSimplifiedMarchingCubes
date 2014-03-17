@@ -37,7 +37,7 @@ namespace AllTest
         {
             watch.Reset();
             watch.Start();
-            AdSMCProcessor mc = new AdSMCProcessor(bmp);
+            SMCProcessor mc = new SMCProcessor(bmp);
             Mesh mesh = mc.GenerateSurface();
             watch.Stop();
             Console.WriteLine("SMC Run time : " + watch.ElapsedMilliseconds + "ms," + "v: " + mesh.GetVertexCount() + " f:" + mesh.GetFaceCount());

@@ -5,40 +5,23 @@ using BaseClasses;
 
 namespace MarchingCubes
 {
-    struct OriginalTriangle
-    {
-        public Int16Triple CellCoord;
-        public int E0;
-        public int E1;
-        public int E2;
-        public OriginalTriangle(int x, int y, int z,int ei0,int ei1,int ei2)
-        {
-            CellCoord.X = x;
-            CellCoord.Y = y;
-            CellCoord.Z = z;
-            E0 = ei0;
-            E1 = ei1;
-            E2 = ei2;
-        }
-    }
     class MCTriangleNetHashTable
     {
         public int CurrentLayerIndex;
-
         int stx;
         int sty;
         int width;
         int height;
-        List<int[,,]> mapList;
+        List<int[, ,]> mapList;
         public MCTriangleNetHashTable(int minx, int miny, int width, int height)
         {
             this.stx = minx - 1;
             this.sty = miny - 1;
             this.width = width + 2;
             this.height = height + 2;
-            mapList = new List<int[,,]>(2);
-            mapList.Add(new int[this.width, this.height,3]);
-            mapList.Add(new int[this.width, this.height,3]);
+            mapList = new List<int[, ,]>(2);
+            mapList.Add(new int[this.width, this.height, 3]);
+            mapList.Add(new int[this.width, this.height, 3]);
             SetDefaultValue(0);
             SetDefaultValue(1);
         }
@@ -58,23 +41,39 @@ namespace MarchingCubes
         {
             CurrentLayerIndex++;
             SetDefaultValue(0);
-            int[,,] temp = mapList[0];
+            int[, ,] temp = mapList[0];
             mapList[0] = mapList[1];
             mapList[1] = temp;
         }
-        public void SetHashValue(int x, int y, int z,int d, int value)
+        public void SetHashValue(int x, int y, int z, int d, int value)
         {
             int index0_1 = z - CurrentLayerIndex;
-            mapList[index0_1][x - stx, y - sty,d] = value;
+            mapList[index0_1][x - stx, y - sty, d] = value;
         }
-        public int GetHashValue(int x, int y, int z,int d)
+        public int GetHashValue(int x, int y, int z, int d)
         {
             int index0_1 = z - CurrentLayerIndex;
-            return mapList[index0_1][x - stx, y - sty,d];
+            return mapList[index0_1][x - stx, y - sty, d];
         }
     }
     public class MCProcessor
     {
+        struct OriginalTriangle
+        {
+            public Int16Triple CellCoord;
+            public int E0;
+            public int E1;
+            public int E2;
+            public OriginalTriangle(int x, int y, int z, int ei0, int ei1, int ei2)
+            {
+                CellCoord.X = x;
+                CellCoord.Y = y;
+                CellCoord.Z = z;
+                E0 = ei0;
+                E1 = ei1;
+                E2 = ei2;
+            }
+        }
         public static byte VULF = 1 << 0;
         public static byte VULB = 1 << 1;
         public static byte VLLB = 1 << 2;
@@ -134,11 +133,11 @@ namespace MarchingCubes
         };
 
 
-        BitMap3d bmp;
-        int d;
-        int h;
-        int w;
-        int wh;
+        protected BitMap3d bmp;
+        protected int d;
+        protected int h;
+        protected int w;
+        protected int wh;
         public MCProcessor(BitMap3d bitmap)
         {
             this.bmp = bitmap;
@@ -186,7 +185,7 @@ namespace MarchingCubes
                 if (temp[pi].X < w && temp[pi].X >= 0
                     && temp[pi].Y < h && temp[pi].Y >= 0
                     && temp[pi].Z < d && temp[pi].Z >= 0
-                    && bmp.data[temp[pi].X + w * (temp[pi].Y) + wh * (temp[pi].Z)] == BitMap3d.WHITE)
+                    && IsInsideIsoSurface(temp[pi].X, temp[pi].Y, temp[pi].Z))
                 {
                     value |= PointIndexToFlag[pi];
                 }
@@ -205,7 +204,7 @@ namespace MarchingCubes
                     int e0index = MCTable.TriTable[value, index];
                     int e1index = MCTable.TriTable[value, index + 1];
                     int e2index = MCTable.TriTable[value, index + 2];
-                    result[tcount] = new OriginalTriangle(indexInWidth,  indexInHeight, indexInDepth,e0index,e1index,e2index);
+                    result[tcount] = new OriginalTriangle(indexInWidth, indexInHeight, indexInDepth, e0index, e1index, e2index);
                     tcount++;
                     index += 3;
                 }
@@ -215,7 +214,7 @@ namespace MarchingCubes
 
         private void MergeTriangleIntoMesh(Mesh mesh, MCTriangleNetHashTable hashMap, OriginalTriangle ot)
         {
-            int e0i= CubeEdgeMapTable[ot.E0].D;
+            int e0i = CubeEdgeMapTable[ot.E0].D;
             int p0x = ot.CellCoord.X + CubeEdgeMapTable[ot.E0].A;
             int p0y = ot.CellCoord.Y + CubeEdgeMapTable[ot.E0].B;
             int p0z = ot.CellCoord.Z + CubeEdgeMapTable[ot.E0].C;
@@ -237,36 +236,36 @@ namespace MarchingCubes
             int p1i;
             int p2i;
             int index = 0;
-            index = hashMap.GetHashValue(p0x, p0y, p0z,e0i);
+            index = hashMap.GetHashValue(p0x, p0y, p0z, e0i);
             if (index == -1)
             {
                 Point3d interp = GetIntersetedPoint(ot.CellCoord.X, ot.CellCoord.Y, ot.CellCoord.Z, ot.E0);
                 p0i = mesh.AddVertex(interp);
-                hashMap.SetHashValue(p0x, p0y, p0z,e0i,p0i);
+                hashMap.SetHashValue(p0x, p0y, p0z, e0i, p0i);
             }
             else
             {
                 p0i = index;
             }
 
-            index = hashMap.GetHashValue(p1x, p1y, p1z,e1i);
+            index = hashMap.GetHashValue(p1x, p1y, p1z, e1i);
             if (index == -1)
             {
                 Point3d interp = GetIntersetedPoint(ot.CellCoord.X, ot.CellCoord.Y, ot.CellCoord.Z, ot.E1);
                 p1i = mesh.AddVertex(interp);
-                hashMap.SetHashValue(p1x, p1y, p1z,e1i ,p1i);
+                hashMap.SetHashValue(p1x, p1y, p1z, e1i, p1i);
             }
             else
             {
                 p1i = index;
             }
 
-            index = hashMap.GetHashValue(p2x, p2y, p2z,e2i);
+            index = hashMap.GetHashValue(p2x, p2y, p2z, e2i);
             if (index == -1)
             {
                 Point3d interp = GetIntersetedPoint(ot.CellCoord.X, ot.CellCoord.Y, ot.CellCoord.Z, ot.E2);
                 p2i = mesh.AddVertex(interp);
-                hashMap.SetHashValue(p2x, p2y, p2z,e2i ,p2i);
+                hashMap.SetHashValue(p2x, p2y, p2z, e2i, p2i);
             }
             else
             {
@@ -277,20 +276,85 @@ namespace MarchingCubes
             mesh.AddFace(t);
         }
 
-        private Point3d GetIntersetedPoint(int cx,int cy,int cz, int ei)
+        protected virtual Point3d GetIntersetedPoint(int cx, int cy, int cz, int ei)
         {
             int p0i = EdgeIndexToEdgeVertexIndex[ei, 0];
             int p1i = EdgeIndexToEdgeVertexIndex[ei, 1];
 
-            int p0X = cx+PointIndexToPointDelta[p0i].X;
+            int p0X = cx + PointIndexToPointDelta[p0i].X;
             int p0Y = cy + PointIndexToPointDelta[p0i].Y;
             int p0Z = cz + PointIndexToPointDelta[p0i].Z;
 
             int p1X = cx + PointIndexToPointDelta[p1i].X;
             int p1Y = cy + PointIndexToPointDelta[p1i].Y;
             int p1Z = cz + PointIndexToPointDelta[p1i].Z;
-           
-            return new Point3d((p0X+p1X)/2.0f,(p0Y+p1Y)/2.0f,(p0Z+p1Z)/2.0f);
+
+            return new Point3d((p0X + p1X) / 2.0f, (p0Y + p1Y) / 2.0f, (p0Z + p1Z) / 2.0f);
+        }
+
+        protected virtual bool IsInsideIsoSurface(int x, int y, int z)
+        {
+            return bmp.data[x + w * y + wh * z] == BitMap3d.WHITE;
+        }
+
+        protected virtual bool InRange(int x, int y, int z)
+        {
+            if (x < w && x >= 0
+                && y < h && y >= 0
+                && z < d && z >= 0)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    public class ConcreteMCP : MCProcessor
+    {
+        public ConcreteMCP(BitMap3d bmp)
+            : base(bmp)
+        {
+
+        }
+        float threshold;
+        public void SetThreshold(float thresValue)
+        {
+            threshold = thresValue;
+        }
+        protected override Point3d GetIntersetedPoint(int cx, int cy, int cz, int ei)
+        {
+            int p0i = EdgeIndexToEdgeVertexIndex[ei, 0];
+            int p1i = EdgeIndexToEdgeVertexIndex[ei, 1];
+
+            int p0X = cx + PointIndexToPointDelta[p0i].X;
+            int p0Y = cy + PointIndexToPointDelta[p0i].Y;
+            int p0Z = cz + PointIndexToPointDelta[p0i].Z;
+
+            int p1X = cx + PointIndexToPointDelta[p1i].X;
+            int p1Y = cy + PointIndexToPointDelta[p1i].Y;
+            int p1Z = cz + PointIndexToPointDelta[p1i].Z;
+            float v0, v1;
+            if (InRange(p0X, p0Y, p0Z))
+            {
+                v0 = bmp.GetPixel(p0X, p0Y, p0Z);
+            }
+            else v0 = 0;
+
+            if (InRange(p1X, p1Y, p1Z))
+            {
+                v1 = bmp.GetPixel(p1X, p1Y, p1Z);
+            }
+            else v1 = 0;
+            float lmb = (v0 - threshold) / (v0 - v1);
+
+            float x = p1X * lmb + (1 - lmb) * p0X;
+            float y = p1Y * lmb + (1 - lmb) * p0Y;
+            float z = p1Z * lmb + (1 - lmb) * p0Z;
+
+            return new Point3d(x, y, z);
+        }
+        protected override bool IsInsideIsoSurface(int x, int y, int z)
+        {
+            return bmp.data[x + w * y + wh * z] >= threshold;
         }
     }
 }

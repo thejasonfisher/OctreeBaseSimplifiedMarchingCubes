@@ -6,12 +6,6 @@ namespace SimplifiedMarchingCubes
 {
     public static class SMCTable
     {
-        //static SMCTable()
-        //{
-        //    int[,] temp = TableThin;
-        //    TableThin = TableFat;
-        //    TableFat = temp;
-        //}
         #region TableThin
         public static int[,] TableThin = new int[256, 16]
         {
